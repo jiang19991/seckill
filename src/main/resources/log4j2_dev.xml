@@ -1,0 +1,124 @@
+<configuration status="OFF" monitorInterval="30">
+    <Properties>
+        <Property name="pattern">%d{yyyy-MM-dd HH:mm:ss,SSS}|%p|%c|%L|%m%n</Property>
+        <Property name="logPath">D:/logs/seckill_02</Property>
+    </Properties>
+    <Appenders>
+        <!--设置在控制台打印日志-->
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${pattern}"/>
+        </Console>
+        <!--设置级别为 DEBUG 日志输出到 debug.log 中-->
+<!--        fileName指定当前日志文件的位置和名称-->
+<!--        filePattern 指定当发生Rolling时，文件的转移和命名规则-->
+        <RollingRandomAccessFile name="debug"
+                                 fileName="${logPath}/debug.log"
+                                 filePattern="${logPath}/debug-%d{yyyy-MM-dd}.log">
+            <Filters>
+                <!--设置该Appender只输出级别为 debug 的日志-->
+                <ThresholdFilter level="DEBUG"/>
+<!--                设置INFO及以上的日志不打印，匹配则拒绝，不匹配则中立-->
+                <ThresholdFilter level="INFO" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <!--这里是结合filePattern中的指定的内容， 按日期生成日志文件，此处是按天-->
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+<!--                SizeBasedTriggeringPolicy 日志文件大小到达一定值，进行Rolling-->
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <!-- 最多保存日志文件的数目 -->
+            <DefaultRolloverStrategy max="15"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="info"
+                                 fileName="${logPath}/info.log"
+                                 filePattern="${logPath}/info-%d{yyyy-MM-dd}.log">
+            <Filters>
+                <ThresholdFilter level="INFO"/>
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="60"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="warn"
+                                 fileName="${logPath}/warn.log"
+                                 filePattern="${logPath}/warn-%d{yyyy-MM-dd}.log">
+            <Filters>
+                <ThresholdFilter level="WARN"/>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="60"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="error"
+                                 fileName="${logPath}/error.log"
+                                 filePattern="${logPath}/error-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="${pattern}"/>
+            <Filters>
+                <ThresholdFilter level="ERROR"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="60"/>
+        </RollingRandomAccessFile>
+        <!-- 设置 task_suc 日志 -->
+        <RollingRandomAccessFile name="task_suc"
+                                 fileName="${logPath}/task_suc.log"
+                                 filePattern="${logPath}/task_suc-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="90"/>
+        </RollingRandomAccessFile>
+        <!-- 设置 task_fail 日志 -->
+        <RollingRandomAccessFile name="task_fail"
+                                 fileName="${logPath}/task_fail.log"
+                                 filePattern="${logPath}/task_fail-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="90"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+<!--        name指定该Logger所适用的包，输出级别为INFO及以上，additivity=false则设置了日志只在自定义的Appender中进行输出-->
+<!--        log4j配置文件中的additivity属性-->
+<!--        它是 子Logger 是否继承 父Logger 的 输出源（appender）的标志位。具体说，默认情况下子Logger会继承父Logger的appender，-->
+<!--        也就是说子Logger会在父Logger的appender里输出。若是additivity设为false，则子Logger只会在自己的appender里输出，而不-->
+<!--        会在父Logger的appender里输出。-->
+
+        <Logger name="com.nowcoder.seckill" level="DEBUG" additivity="false">
+<!--            指定日志输出到指定name的Appender中-->
+            <AppenderRef ref="debug"/>
+            <AppenderRef ref="info"/>
+            <AppenderRef ref="warn"/>
+            <AppenderRef ref="error"/>
+        </Logger>
+        <!-- org.springframework 只输出 INFO 级别及以上的日志 -->
+        <Logger name="org.springframework" level="INFO"/>
+        <!-- org.apache 只输出 INFO 级别及以上的日志 -->
+        <Logger name="org.apache" level="INFO"/>
+        <!-- task_suc 日志 -->
+        <Logger name="task_suc" additivity="false">
+            <AppenderRef ref="task_suc"/>
+        </Logger>
+        <!-- task_fail 日志 -->
+        <Logger name="task_fail" additivity="false">
+            <AppenderRef ref="task_fail"/>
+        </Logger>
+<!--        指定项目的根日志，级别为DEBUG及以上的都输出，如果没有单独指定Logger，那么就会默认使用该root日志输出-->
+        <Root level="DEBUG">
+<!--            指定该日志输出到name为console的Appender-->
+            <AppenderRef ref="console"/>
+        </Root>
+    </Loggers>
+</configuration>
