@@ -20,6 +20,8 @@ public class Log4j2Test {
     private static final Logger sucLogger = LoggerFactory.getLogger("task_suc");
     private static final Logger failLogger = LoggerFactory.getLogger("task_fail");
 
+
+
     @Test
     void testLog() {
         sucLogger.debug("task_suc debug");
